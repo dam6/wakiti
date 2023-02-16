@@ -1,0 +1,30 @@
+# Created by github.com/dam6
+
+#DB functions
+query() {
+	local query_result=$(mysql -u $DB_USER -p$DB_PASS -B -N -e "$1")
+	echo $query_result
+}
+
+check_for_existant_user() {
+	local check=$(query "select username from $DB_NAME.users where username='$USERNAME';")
+	if [[ $check == $USERNAME ]]; then
+		return 1
+	else
+		return 0
+	fi
+}
+
+insert_new_user() {
+	check_for_existant_user
+	if [[ $? -eq 1 ]]; then
+		send_message $CHAT_ID "Otra vez tu? En fin..."
+		return 1	#Abort new insert
+	fi
+
+	send_message $CHAT_ID "Holaaaaaaa buenaaaasss :))"
+	query "insert into $DB_NAME.users (username, chat_id) values ('$USERNAME', $CHAT_ID);"
+}
+
+
+# Created by github.com/dam6
